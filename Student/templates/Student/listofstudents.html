@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of Students</title>
+</head>
+<body>
+    {% for student in all_students %}
+    <li><a href="/student/{{ student.id_num }}/"> {{ student.name }} </a></li>
+    {% endfor %}
+</body>
+</html>
