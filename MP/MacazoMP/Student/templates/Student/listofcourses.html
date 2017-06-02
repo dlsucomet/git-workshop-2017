@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of Courses</title>
+</head>
+<body>
+    {% for course in all_courses %}
+    <li><a href="/student/{{ course.course_code }}/"> {{ course.course_code }} </a></li>
+    {% endfor %}
+</body>
+</html>
