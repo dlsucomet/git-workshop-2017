@@ -1,3 +1,5 @@
+#Run this file
+
 from CourseMenus import CourseMenus
 from StudentMenus import StudentMenus
 
