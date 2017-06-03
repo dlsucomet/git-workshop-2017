@@ -5,27 +5,62 @@ class Database():
 	def __init__(self):
 		self.studentList = []
 		self.courseList = []
-		self.reportCards = []
 		
 	def addStudent(self, name, id):
 		self.studentList.append(Student(name,id))
+		return "Student -" + self.studentList[-1].getName() + "- Added!"
 		
 	def addCourse(self, code, units):
 		self.courseList.append(Course(code,units))
+		return "Course -" + self.courseList[-1].getCode() + "- Added!"
 	
+	def findStudent(self, id):
+		for s in self.studentList:
+			if(s.getID() == id):
+				return s
+		return None
+		
+	def findCourse(self, code):
+		for c in self.courseList:
+			if(c.getCode() == code):
+				return c
+		return None
+		
+	def checkIfEnrolled(self, id, code):
+		s = self.findStudent(id)
+		c = self.findCourse(code)
+		
+		if(s == None or c == None):
+			print("\nInvalid Entry!\n")
+			return False
+		else:
+			for s in c.getStudentList():
+				if(s.getID() == id): 
+					return True
+		return False
+		
 	def deleteStudent(self, id):
-		while s in self.studentList:
+		for c in self.courseList:
+			for s in c.getStudentList():
+				if(s.getID() == id):
+					c.getStudentList().remove(s)
+					
+		for s in self.studentList:
 			if(s.getID() == id):
 				self.studentList.remove(s)
-				return "\nStudent Removed!\n"
+				return "\nStudent -" + s.getName + "- Removed!\n"
 		return "\nStudent Not Found!\n"
 		
 	def deleteCourse(self, code):
-		while c in self.courseList:
-			if(c.getID() == code):
+		for s in self.studentList:
+			for c in s.getCourseList():
+				if(c.getCode() == code):
+					s.getCourseList.remove(c)
+		for c in self.courseList:
+			if(c.getCode() == code):
 				self.courseList.remove(c)
-				return "\nStudent Removed!\n"
-		return "\nStudent Not Found!\n"
+				return "\nCourse -" + c.getCode + "- Removed! \n"
+		return "\nCourse Not Found!\n"
 		
 	def getStudent(self, id):
 		for s in self.studentList:
@@ -44,17 +79,94 @@ class Database():
 		for c in self.courseList:
 			list.append(c.getCode())
 		return list
+		
+	def enrollStudent(self):
+		s = self.findStudent(input("Student ID: "))
+		c = self.findCourse(input("Course Code:"))
+		
+		if(s == None or c == None):
+			print("Invalid Entry")
+		else:
+			c.enrollStudent(s)
+			s.enrollCourse(c)
+			print(s.getName() + "-" + s.getID())
+			print("Courses Enrolled:")
+			for c in s.getCourseList():
+				print(c.getCode())
+			
+	def dropStudent(self):
+		s = self.findStudent(input("Student ID: "))
+		c = self.findCourse(input("Course Code:"))
+		
+		if(s == None or c == None):
+			print("Invalid Entry")
+		else:
+			c.dropStudent(s)
+			s.dropCourse(c)
+			print(s.getName() + "-" + s.getID())
+			print("Courses Enrolled:")
+			for c in s.getCourseList():
+				print(c.getCode())
+			
+	def editStudentInfo(self, id):
+		s = findStudent(id)
+		if (s == None):
+			print("Student Not Found!")
+		else:
+			s.setName(input("New Name: "))
+			s.setID(input("New ID: "))
+
+	def editCourseInfo(self, code):
+		c = findCourse(code)
+		if (c == None):
+			print("Course Not Found!")
+		else:
+			c.setCode(input("New Code: "))
+			s.setUnits(input("New Units: "))
+			
+	def setGrade(self): 
+		s = self.findStudent(input("Student ID: "))
+		c = self.findCourse(input("Course Code:"))
+		
+		if(s == None or c == None):
+			print("Invalid Entry")
+		else:
+			if(not self.checkIfEnrolled(s.getID(),c.getCode())):
+				print(s.getName() + " is not enrolled in " + c.getCode)
+			else:
+				grade = input("Set Grade: ")
+				s.getGrades().append([c.getCode, grade])
 				
-	
+	def viewReportCard(self):
+		s = self.findStudent(input("Student ID: "))
+		
+		if(s == None):
+			print("\nStudent Not Found!\n")
+		else:
+			print(s.getName() + "-" + s.getID())
+			print("Grades: ")
+			for g in s.getGrades():
+				print(g[0] + ": " + g[1])
+			
 	
 class Student():
 	def __init__(self, name,id):
 		self.name = name
 		self.id = id
+		self.courseList = []
+		self.grades = []
 	def getName(self):
 		return self.name
 	def getID(self):
 		return self.id
+	def getCourseList(self):
+		return self.courseList
+	def getGrades(self):
+		return self.grades
+	def enrollCourse(self, c):
+		self.courseList.append(c)
+	def dropCourse(self, c):
+			self.courseList.remove(c)
 	def setname(self, name):
 		self.name = name
 	def setID(self, id):
@@ -64,21 +176,23 @@ class Course():
 	def __init__(self, code, units):
 		self.code = code
 		self.units = units
+		self.studentList = []
 	def getCode(self):
 		return self.code
 	def getUnits(self):
 		return self.units
+	def getStudentList(self):
+		print("Students Enrolled: ")
+		for s in self.studentList:
+			print(s.getName)
+	def enrollStudent(self, s):
+		self.studentList.append(s)
+	def dropStudent(self, s):
+		self.studentList.remove(s)
 	def setCode(self, code):
 		self.code = code
 	def setUnits(self, units):
 		self.units = units
-
-class Grade():
-	def __init__(self, course, student, grade):
-		self.course = course
-		self.student = student
-		self.grade = grade
-
 		
 def main():
 	mls = Database()
@@ -108,13 +222,13 @@ def main():
 			choice2 = int(input("Select an Item (Pick a Number): "))
 			
 			if(choice2 == 1):
-				mls.addStudent(input("Student Name: "), input("Student ID: "))
+				print(mls.addStudent(input("Student Name: "), input("Student ID: ")))
 			elif(choice2 == 2):
-				print("")
+				print(mls.deleteStudent(input("Student ID: ")))
 			elif(choice2 == 3):
-				print("")	
+				mls.editStudentInfo("Student ID: ")
 			elif(choice2 == 4):
-				print("")
+				mls.viewReportCard()
 		elif(choice1 == 4):
 			print("\nCourse Functions")
 			print("1. Add Course")
@@ -128,17 +242,17 @@ def main():
 			choice2 = int(input("Select an Item (Pick a Number): "))
 			
 			if(choice2 == 1):
-				mls.addCourse(input("Course Code: "), input("Units: "))
+				print(mls.addCourse(input("Course Code: "), input("Units: ")))
 			elif(choice2 == 2):
-				print("")
+				print(mls.deleteCourse(input("Course Code: ")))
 			elif(choice2 == 3):
-				print("")
+				mls.editCourseInfo("Course Code: ")
 			elif(choice2 == 4):
-				print("")
+				mls.enrollStudent()
 			elif(choice2 == 5):
-				print("")
+				mls.dropStudent()
 			elif(choice2 == 6):
-				print("")
+				mls.setGrade()
 		
 
 
